@@ -32,18 +32,28 @@
 ### 실행 방법
 
 ```bash
-# 1. 레포지토리 클론
+# 1. 레포 클론
 git clone https://github.com/SM-Four-Idiots/SM-TOEIC-BE.git
 cd SM-TOEIC-BE
 
-# 2. 로컬 MySQL DB 컨테이너 빌드 및 실행
-docker-compose up -d
+# 2. application.yaml 설정
+cp src/main/resources/application-example.yaml src/main/resources/application.yaml
+# application.yaml 열어서 DB 정보 확인 (현재는 admin/admin으로 맞춰져 있음)
 
-# 3. Spring Boot 애플리케이션 빌드
-./gradlew build
+# 3. 빌드
+./gradlew build -x test
 
-# 4. 서버 실행 (기본 포트: http://localhost:8080)
-./gradlew bootRun
+# 4. 실행
+docker compose up -d
+```
+
+---
+
+### 팀원 PC에 필요한 것
+```
+- Docker Desktop 설치
+- Java 21 설치 (빌드용)
+- IntelliJ IDEA (또는 VS Code)
 ```
 
 ## 개발 환경 설정
