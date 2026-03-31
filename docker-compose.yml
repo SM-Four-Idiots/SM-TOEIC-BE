@@ -1,0 +1,30 @@
+services:
+  backend:
+    build: . # 현재 폴더의 Dockerfile로 이미지 빌드
+    container_name: backend
+    ports:
+      - "8080:8080" # 포트 설정
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/vocadb #db이름은 snake_case로 작성할 것
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin # .env로 비밀번호 뺄 것
+    depends_on:
+      - db # db 컨테이너가 실행 우선권 가짐
+
+  db:
+    image: mysql:8.0 # 도커 허브에서 MySQL 8.0 이미지 가져옴
+    container_name: db
+    restart: always # 컨테이너 꺼지면 자동 재시작
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: vocadb # 자동으로 db 생성
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      TZ: Asia/Seoul
+    ports:
+      - "3307:3306" # 외부 접속 포트 : 내부 통신 포트(3306 고정)
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes: # 컨테이너 꺼져도 데이터 유지
+  mysql_data: {}
