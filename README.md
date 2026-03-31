@@ -163,6 +163,10 @@ src/main/java/com/sm/toeic/
 2. **Java 메서드 및 변수**: camelCase 사용 (예: `getWordList`)
 3. **DB 테이블 및 컬럼**: snake_case 사용 (예: `word_list`, `user_id`)
 
+## 트러블슈팅 (Troubleshooting)
+
+프로젝트 진행 중 자주 발생하는 에러와 해결책을 기록합니다.
+
 ## 연관 레포지토리
 
 * Front-end 레포지토리: [https://github.com/SM-Four-Idiots/SM-TOEIC-FE](https://github.com/SM-Four-Idiots/SM-TOEIC-FE)
