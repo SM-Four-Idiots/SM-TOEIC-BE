@@ -1,6 +1,6 @@
-# 영단어 마스터 (English Word Master) - Back-end (Spring Boot + MySQL)
+# 토스트 (TOEST, TOAST + QUEST) - Back-end (Spring Boot + MySQL)
 
-영단어 마스터(English Word Master) Back-end 레포지토리입니다. Spring Boot 기반의 프로젝트이며, 폼/검증, API 통신, 데이터 관리를 위한 견고한 아키텍처로 구성되어 있습니다.
+토스트 (TOEST, TOAST + QUEST) Back-end 레포지토리입니다. Spring Boot 기반의 프로젝트이며, 폼/검증, API 통신, 데이터 관리를 위한 견고한 아키텍처로 구성되어 있습니다.
 
 ## 프로젝트 소개
 
