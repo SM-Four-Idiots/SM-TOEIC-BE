@@ -136,6 +136,7 @@ docs: 문서 수정 (README 등)
 style: 코드 스타일 수정 (포맷팅, 세미콜론 등 로직 변경 없음)
 refactor: 코드 리팩토링
 chore: 빌드 설정, 패키지 매니저 설정 등 (코드 로직 변경 없음)
+rename: 파일 이름 변경
 
 예시: "feat: 관리자 단어 추가 CRUD 로직 구현, fix: 회원가입 API NullPointerException 해결"
 ```
