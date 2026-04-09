@@ -1,6 +1,6 @@
 # 영단어 마스터 (English Word Master) - Back-end (Spring Boot + MySQL)
 
-영단어 마스터(English Word Master) Back-end 레포지토리입니다. Spring Boot 기반의 프로젝트이며, 폼/검증, API 통신, 데이터 관리를 위한 견고한 아키텍처로 구성되어 있습니다.
+TOEST(Toeic + Quest) Back-end 레포지토리입니다. Spring Boot 기반의 프로젝트이며, 폼/검증, API 통신, 데이터 관리를 위한 아키텍처로 구성되어 있습니다.
 
 ## 프로젝트 소개
 
@@ -10,42 +10,104 @@
 
 현재 API 명세는 다음 도구를 활용하여 자동화 및 문서화될 예정입니다:
 
-* **Swagger (Springdoc)** 또는 **Spring RestDocs** (도입 확정 후 링크 업데이트 예정)
+* **Swagger (Springdoc)** (링크 추가 필요)
 
 ## 기술 스택
 
 * **Main**: Java, Spring Boot
 * **Database**: MySQL, Spring Data JPA
-* **Build Tool**: Gradle (또는 Maven - *팀 내 최종 통일 예정*)
+* **Build Tool**: Gradle
 * **Infrastructure**: Docker (`docker-compose.yml`을 통한 로컬 DB 컨테이너 세팅)
-* **Deployment**: AWS EC2 프리티어, Koyeb, Render 등 클라우드 서버 (선정 예정)
-* **AI Tools (Vibe Coding)**: Gemini 3.1 Pro, GPT-5 5.3 Codex, CodeRabbit AI
+* **Deployment**: AWS EC2 프리티어
+* **AI Tools (Vibe Coding)**: Gemini 3.1 Pro, GPT-5 5.3 Codex, Claude opus 4.6 CodeRabbit AI
 * **IDE**: IntelliJ IDEA 권장
 
 ## 빠른 시작
 
 ### 사전 요구사항
 
-* Java 17 이상 권장
-* Docker 및 Docker Compose 설치 (로컬 DB 세팅용)
+* Java 21 이상
+* Docker Desktop 설치
 
-### 실행 방법
+### 1. Docker Desktop 설치
+
+Docker Desktop은 컨테이너 실행 환경입니다. 설치하면 DB, 서버 등을 명령어 한 줄로 실행할 수 있습니다.
+
+**Windows**
+1. [https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop) 접속
+2. `Download for Windows` 클릭 후 설치
+3. 설치 완료 후 Docker Desktop 실행 (고래 아이콘이 트레이에 뜨면 정상)
+4. 터미널에서 확인
+```bash
+   docker -v
+```
+
+**macOS**
+1. 동일한 링크에서 `Download for Mac` 클릭 후 설치
+2. 설치 완료 후 Docker Desktop 실행 (상단 메뉴바에 고래 아이콘이 뜨면 정상)
+3. 터미널에서 확인
+```bash
+   docker -v
+```
+
+> Docker Desktop이 실행 중인 상태에서만 docker 명령어가 동작합니다.
+> 개발할 때는 항상 Docker Desktop을 먼저 켜두세요.
+
+### 2. 두 레포 클론
+
+SM-TOEIC-BE와 SM-TOEIC-FE는 **반드시 같은 폴더 안에 나란히** 위치해야 합니다.
 
 ```bash
-# 1. 레포 클론
+# 원하는 폴더로 이동 후
 git clone https://github.com/SM-Four-Idiots/SM-TOEIC-BE.git
+git clone https://github.com/SM-Four-Idiots/SM-TOEIC-FE.git
+```
+
+클론 후 구조:
+아무 폴더명/
+├── SM-TOEIC-BE/
+└── SM-TOEIC-FE/
+
+### 3. application.yaml 설정
+
+```bash
 cd SM-TOEIC-BE
-
-# 2. application.yaml 설정
 cp src/main/resources/application-example.yaml src/main/resources/application.yaml
-# application.yaml 열어서 DB 정보 확인 (현재는 admin/admin으로 맞춰져 있음)
+```
 
-# 3. 빌드
+### 4. 백엔드 빌드
+
+Docker 실행 전에 반드시 빌드가 먼저 되어야 합니다.
+
+```bash
+# Windows
+gradlew build -x test
+
+# macOS / Linux
 ./gradlew build -x test
+```
 
-# 4. 실행
+`BUILD SUCCESSFUL` 메시지가 뜨면 완료입니다.
+
+### 5. 전체 환경 실행
+
+```bash
 docker compose up -d
 ```
+
+처음 실행 시 이미지를 다운로드하므로 수 분 정도 소요될 수 있습니다.
+
+실행 확인:
+```bash
+docker compose ps
+```
+
+아래처럼 3개가 모두 `running` 상태면 정상입니다.
+
+NAME        STATUS
+backend     running
+db          running
+frontend    running
 
 ---
 
@@ -165,7 +227,7 @@ src/main/java/com/sm/toeic/
 
 ## 트러블슈팅 (Troubleshooting)
 
-프로젝트 진행 중 자주 발생하는 에러와 해결책을 기록합니다.
+깃허브 이슈 템플릿을 토대로 이슈를 생성한 후 팀원과의 의견 조율 후 결정합니다.
 
 ## 연관 레포지토리
 

@@ -1,30 +1,43 @@
 services:
   backend:
-    build: . # 현재 폴더의 Dockerfile로 이미지 빌드
+    build: ./SM-TOEIC-BE
     container_name: backend
     ports:
-      - "8080:8080" # 포트 설정
+      - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/vocadb #db이름은 snake_case로 작성할 것
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/vocadb
       - SPRING_DATASOURCE_USERNAME=admin
-      - SPRING_DATASOURCE_PASSWORD=admin # .env로 비밀번호 뺄 것
+      - SPRING_DATASOURCE_PASSWORD=admin
     depends_on:
-      - db # db 컨테이너가 실행 우선권 가짐
+      - db
 
   db:
-    image: mysql:8.0 # 도커 허브에서 MySQL 8.0 이미지 가져옴
+    image: mysql:8.0
     container_name: db
-    restart: always # 컨테이너 꺼지면 자동 재시작
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: vocadb # 자동으로 db 생성
+      MYSQL_DATABASE: vocadb
       MYSQL_USER: admin
       MYSQL_PASSWORD: admin
       TZ: Asia/Seoul
     ports:
-      - "3307:3306" # 외부 접속 포트 : 내부 통신 포트(3306 고정)
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
 
-volumes: # 컨테이너 꺼져도 데이터 유지
+  frontend:
+    image: node:20-alpine
+    container_name: frontend
+    working_dir: /app
+    volumes:
+      - ./SM-TOEIC-FE:/app
+      - /app/node_modules
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8080
+
+volumes:
   mysql_data: {}
