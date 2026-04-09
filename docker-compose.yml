@@ -1,6 +1,6 @@
 services:
   backend:
-    build: ./SM-TOEIC-BE
+    build: .
     container_name: backend
     ports:
       - "8080:8080"
@@ -31,7 +31,7 @@ services:
     container_name: frontend
     working_dir: /app
     volumes:
-      - ./SM-TOEIC-FE:/app
+      - ../SM-TOEIC-FE:/app  # 상위 폴더의 SM-TOEIC-FE 참조
       - /app/node_modules
     command: sh -c "npm install && npm run dev"
     ports:
