@@ -20,5 +20,10 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
   sql:
     init:
-      mode: never # application-example.yaml은 never이지만 실제 application-example은 always로 해야함
+      mode: never # application-example.yaml은 never이지만 실제 application.yaml은 always로 해야함
 
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs

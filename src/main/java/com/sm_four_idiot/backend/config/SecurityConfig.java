@@ -44,7 +44,8 @@ public class SecurityConfig {
         http
                 // CSRF 비활성화 (JWT 사용)
                 .csrf(AbstractHttpConfigurer::disable)
-
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
                 // 세션 미사용 (JWT Stateless)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -53,9 +54,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // 인증 없이 접근 가능한 API
                         .requestMatchers(
-                                "/api/auth/**",       // 회원가입, 로그인
-                                "/swagger-ui/**",     // Swagger UI
-                                "/v3/api-docs/**"     // Swagger API 문서
+                                "/api/auth/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs",
+                                "/swagger-resources/**",
+                                "/webjars/**",
+                                "/error"
                         ).permitAll()
                         // 단어 조회는 GET만 허용
                         .requestMatchers(HttpMethod.GET, "/api/words", "/api/words/**").permitAll()
