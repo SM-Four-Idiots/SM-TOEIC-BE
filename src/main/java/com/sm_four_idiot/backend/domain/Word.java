@@ -3,6 +3,8 @@ package com.sm_four_idiot.backend.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 /**
  * 토익 단어 엔티티
@@ -35,6 +37,8 @@ public class Word {
     private String category;
 
     /** 난이도 티어 (1~5, Sprint 2에서 Tier 엔티티와 연동 예정) */
+    @Min(1)
+    @Max(5)
     @Column(nullable = false)
     private int tierLevel;
 
