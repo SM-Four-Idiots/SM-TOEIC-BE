@@ -24,15 +24,37 @@ repositories {
 }
 
 dependencies {
+	// JPA (데이터베이스 ORM)
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	// Spring Security (인증/인가)
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	// Validation (요청 데이터 유효성 검사)
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// Spring Web MVC (REST API)
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+
+	// Swagger UI (API 문서 자동화)
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'
+
+	// JWT (토큰 기반 인증)
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
+	// Lombok (보일러플레이트 코드 자동 생성)
 	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// DevTools (개발 시 자동 재시작)
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	// MySQL 드라이버
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// 테스트
 	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
