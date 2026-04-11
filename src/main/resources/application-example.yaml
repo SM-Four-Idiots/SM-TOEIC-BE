@@ -1,3 +1,7 @@
+jwt:
+  secret: "replace-with-32-byte-secret"
+  expiration: 86400000
+
 spring:
   application:
     name: backend
@@ -13,3 +17,4 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+
