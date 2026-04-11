@@ -1,3 +1,7 @@
+jwt:
+  secret: "replace-with-32-byte-secret"
+  expiration: 86400000
+
 spring:
   application:
     name: backend
@@ -7,9 +11,19 @@ spring:
     password: # 복사해서 여기에 붙여넣으세요
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
+    defer-datasource-initialization: true
     hibernate:
       ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+  sql:
+    init:
+      mode: never # application-example.yaml은 never이지만 실제 application.yaml은 always로 해야함
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
