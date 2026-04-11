@@ -1,8 +1,8 @@
 package com.sm_four_idiot.backend.controller;
 
+import com.sm_four_idiot.backend.dto.TestQuestionResponse;
 import com.sm_four_idiot.backend.dto.TestRequest;
 import com.sm_four_idiot.backend.dto.TestResponse;
-import com.sm_four_idiot.backend.dto.WordResponse;
 import com.sm_four_idiot.backend.service.TestService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class TestController {
      * GET /api/test/questions
      */
     @GetMapping("/questions")
-    public ResponseEntity<List<WordResponse>> getTestQuestions() {
+    public ResponseEntity<List<TestQuestionResponse>> getTestQuestions() {
         return ResponseEntity.ok(testService.getTestQuestions());
     }
 

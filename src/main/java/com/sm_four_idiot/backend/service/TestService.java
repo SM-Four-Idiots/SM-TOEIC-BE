@@ -4,9 +4,9 @@ import com.sm_four_idiot.backend.domain.TestResult;
 import com.sm_four_idiot.backend.domain.User;
 import com.sm_four_idiot.backend.domain.Word;
 import com.sm_four_idiot.backend.domain.WrongWord;
+import com.sm_four_idiot.backend.dto.TestQuestionResponse;
 import com.sm_four_idiot.backend.dto.TestRequest;
 import com.sm_four_idiot.backend.dto.TestResponse;
-import com.sm_four_idiot.backend.dto.WordResponse;
 import com.sm_four_idiot.backend.repository.TestResultRepository;
 import com.sm_four_idiot.backend.repository.UserRepository;
 import com.sm_four_idiot.backend.repository.WordRepository;
@@ -38,15 +38,16 @@ public class TestService {
     /**
      * 테스트 문제 출제
      * - 전체 단어 중 랜덤으로 10개 출제
-     * @return 출제된 단어 리스트
+     * - english(정답) 필드 제외하여 정답 노출 방지
+     * @return 출제된 단어 리스트 (정답 제외)
      */
     @Transactional(readOnly = true)
-    public List<WordResponse> getTestQuestions() {
+    public List<TestQuestionResponse> getTestQuestions() {
         List<Word> allWords = wordRepository.findAll();
         Collections.shuffle(allWords);
         return allWords.stream()
                 .limit(10)
-                .map(WordResponse::new)
+                .map(TestQuestionResponse::new)
                 .collect(Collectors.toList());
     }
 
@@ -59,9 +60,14 @@ public class TestService {
      */
     @Transactional
     public TestResponse submitAnswer(TestRequest request) {
+        // 인증 정보 null 체크
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다");
+        }
+
         // 현재 로그인한 사용자 조회
-        String email = SecurityContextHolder.getContext()
-                .getAuthentication().getName();
+        String email = authentication.getName();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.UNAUTHORIZED, "로그인이 필요합니다"));

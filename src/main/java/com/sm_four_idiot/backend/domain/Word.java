@@ -57,9 +57,9 @@ public class Word {
      * 단어 정보 수정
      */
     public void update(String english, String meaning, String category, int tierLevel) {
-        this.english = english;
-        this.meaning = meaning;
-        this.category = category;
+        this.english = english.trim();
+        this.meaning = meaning.trim();
+        this.category = category.trim();
         this.tierLevel = tierLevel;
     }
 }

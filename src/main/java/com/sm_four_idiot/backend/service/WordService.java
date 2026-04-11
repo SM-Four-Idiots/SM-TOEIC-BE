@@ -88,10 +88,10 @@ public class WordService {
      */
     @Transactional
     public void deleteWord(Long id) {
-        if (!wordRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "단어를 찾을 수 없습니다");
-        }
-        wordRepository.deleteById(id);
+        Word word = wordRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "단어를 찾을 수 없습니다"));
+        wordRepository.delete(word);
     }
 
 }
