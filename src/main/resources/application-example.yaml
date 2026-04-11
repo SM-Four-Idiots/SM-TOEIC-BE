@@ -1,3 +1,7 @@
+jwt:
+  secret: "replace-with-32-byte-secret"
+  expiration: 86400000
+
 spring:
   application:
     name: backend
@@ -14,6 +18,3 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
 
-  jwt:
-    secret: ${# 복사해서 여기에 붙여넣으세요}
-    expiration: 86400000

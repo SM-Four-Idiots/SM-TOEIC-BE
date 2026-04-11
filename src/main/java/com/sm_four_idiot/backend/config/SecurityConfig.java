@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 
 /**
  * Spring Security 설정 클래스
@@ -59,7 +60,7 @@ public class SecurityConfig {
                                 "/v3/api-docs/**"     // Swagger API 문서
                         ).permitAll()
                         // 관리자만 접근 가능한 API
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/words", "/api/words/**").permitAll()
                         // 그 외 모든 요청은 로그인 필요
                         .anyRequest().authenticated()
                 )
