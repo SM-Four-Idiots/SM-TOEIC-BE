@@ -7,9 +7,12 @@ import com.sm_four_idiot.backend.dto.LoginRequest;
 import com.sm_four_idiot.backend.dto.SignUpRequest;
 import com.sm_four_idiot.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * 인증 관련 비즈니스 로직
@@ -30,19 +33,21 @@ public class AuthService {
      */
     @Transactional
     public void signUp(SignUpRequest request) {
-        // 이메일 중복 확인
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("이미 사용 중인 이메일입니다");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다");
         }
 
-        User user = User.builder()
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .nickname(request.getNickname())
-                .role(User.Role.USER)
-                .build();
-
-        userRepository.save(user);
+        try {
+            User user = User.builder()
+                    .email(request.getEmail())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .nickname(request.getNickname())
+                    .role(User.Role.USER)
+                    .build();
+            userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다");
+        }
     }
 
     /**
@@ -55,11 +60,13 @@ public class AuthService {
     public AuthResponse login(LoginRequest request) {
         // 이메일로 사용자 조회
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다"));
 
         // 비밀번호 검증
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다");
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다");
         }
 
         // JWT 토큰 발급
