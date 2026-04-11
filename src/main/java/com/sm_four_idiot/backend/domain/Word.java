@@ -52,4 +52,14 @@ public class Word {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
+
+    /**
+     * 단어 정보 수정
+     */
+    public void update(String english, String meaning, String category, int tierLevel) {
+        this.english = english;
+        this.meaning = meaning;
+        this.category = category;
+        this.tierLevel = tierLevel;
+    }
 }
