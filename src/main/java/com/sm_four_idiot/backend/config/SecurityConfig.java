@@ -54,13 +54,15 @@ public class SecurityConfig {
                         // 인증 없이 접근 가능한 API
                         .requestMatchers(
                                 "/api/auth/**",       // 회원가입, 로그인
-                                "/api/words",         // 단어 목록 조회
-                                "/api/words/**",      // 단어 상세/카테고리 조회
                                 "/swagger-ui/**",     // Swagger UI
                                 "/v3/api-docs/**"     // Swagger API 문서
                         ).permitAll()
-                        // 관리자만 접근 가능한 API
+                        // 단어 조회는 GET만 허용
                         .requestMatchers(HttpMethod.GET, "/api/words", "/api/words/**").permitAll()
+                        // 테스트 문제 출제는 GET 허용
+                        .requestMatchers(HttpMethod.GET, "/api/test/questions").permitAll()
+                        // 관리자만 접근 가능한 API
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // 그 외 모든 요청은 로그인 필요
                         .anyRequest().authenticated()
                 )

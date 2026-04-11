@@ -5,7 +5,9 @@ import com.sm_four_idiot.backend.service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.sm_four_idiot.backend.dto.WordRequest;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import java.util.List;
 
 /**
@@ -36,5 +38,35 @@ public class WordController {
     public ResponseEntity<List<WordResponse>> getWordsByCategory(
             @RequestParam String category) {
         return ResponseEntity.ok(wordService.getWordsByCategory(category));
+    }
+
+    /**
+     * 단어 추가 (관리자 전용)
+     * POST /api/admin/words
+     */
+    @PostMapping("/api/admin/words")
+    public ResponseEntity<WordResponse> createWord(@Valid @RequestBody WordRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(wordService.createWord(request));
+    }
+
+    /**
+     * 단어 수정 (관리자 전용)
+     * PUT /api/admin/words/{id}
+     */
+    @PutMapping("/api/admin/words/{id}")
+    public ResponseEntity<WordResponse> updateWord(@PathVariable Long id,
+                                                   @Valid @RequestBody WordRequest request) {
+        return ResponseEntity.ok(wordService.updateWord(id, request));
+    }
+
+    /**
+     * 단어 삭제 (관리자 전용)
+     * DELETE /api/admin/words/{id}
+     */
+    @DeleteMapping("/api/admin/words/{id}")
+    public ResponseEntity<Void> deleteWord(@PathVariable Long id) {
+        wordService.deleteWord(id);
+        return ResponseEntity.noContent().build();
     }
 }
