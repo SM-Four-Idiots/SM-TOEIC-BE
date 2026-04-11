@@ -30,7 +30,7 @@ public class WordController {
 
     /**
      * 카테고리별 단어 조회
-     * GET /api/words?category=business
+     * GET /api/words/category?category=business
      */
     @GetMapping("/category")
     public ResponseEntity<List<WordResponse>> getWordsByCategory(

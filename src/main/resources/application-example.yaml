@@ -20,5 +20,5 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
   sql:
     init:
-      mode: always
+      mode: never # application-example.yaml은 never이지만 실제 application-example은 always로 해야함
 

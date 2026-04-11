@@ -12,7 +12,9 @@ import jakarta.validation.constraints.Min;
  * - tier_level은 Sprint 2에서 Tier 엔티티와 연관관계 추가 예정
  */
 @Entity
-@Table(name = "word")
+@Table(name = "word", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"english", "category"})
+})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
