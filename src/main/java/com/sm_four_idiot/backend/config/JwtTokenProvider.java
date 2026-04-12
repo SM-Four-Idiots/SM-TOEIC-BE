@@ -21,11 +21,16 @@ public class JwtTokenProvider {
     /** 액세스 토큰 만료 시간 (밀리초) */
     private final long accessTokenExpiration;
 
+    /** 리프레시 토큰 만료 시간 (밀리초) */
+    private final long refreshTokenExpiration;
+
     public JwtTokenProvider(
             @Value("${jwt.secret}") String secret,
-            @Value("${jwt.expiration}") long accessTokenExpiration) {
+            @Value("${jwt.expiration}") long accessTokenExpiration,
+            @Value("${jwt.refresh-expiration}") long refreshTokenExpiration) {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.accessTokenExpiration = accessTokenExpiration;
+        this.refreshTokenExpiration = refreshTokenExpiration;
     }
 
     /**
@@ -41,6 +46,23 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .subject(email)
                 .claim("role", role)
+                .issuedAt(now)
+                .expiration(expiry)
+                .signWith(secretKey)
+                .compact();
+    }
+
+    /**
+     * 리프레시 토큰 생성
+     * @param email 사용자 이메일
+     * @return 생성된 리프레시 토큰 문자열
+     */
+    public String generateRefreshToken(String email) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + refreshTokenExpiration);
+
+        return Jwts.builder()
+                .subject(email)
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(secretKey)
