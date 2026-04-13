@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * 인증 관련 API 컨트롤러
- * - 회원가입, 로그인, 로그아웃
+ * - 회원가입, 로그인, 로그아웃, 토큰 재발급
  */
 @RestController
 @RequestMapping("/api/auth")
@@ -37,8 +37,17 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        AuthResponse response = authService.login(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(authService.login(request));
+    }
+
+    /**
+     * 토큰 재발급
+     * POST /api/auth/refresh
+     */
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refresh(
+            @RequestHeader("Refresh-Token") String refreshToken) {
+        return ResponseEntity.ok(authService.refresh(refreshToken));
     }
 
     /**
@@ -46,8 +55,9 @@ public class AuthController {
      * POST /api/auth/logout
      */
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout() {
-        authService.logout();
+    public ResponseEntity<Void> logout(
+            @RequestHeader("Refresh-Token") String refreshToken) {
+        authService.logout(refreshToken);
         return ResponseEntity.ok().build();
     }
 }

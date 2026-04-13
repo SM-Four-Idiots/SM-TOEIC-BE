@@ -28,6 +28,6 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다"));
-        return new UserInfoResponse(user.getEmail(), user.getNickname());
+        return new UserInfoResponse(user.getNickname());
     }
 }
