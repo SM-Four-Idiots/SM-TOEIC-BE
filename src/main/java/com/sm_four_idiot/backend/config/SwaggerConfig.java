@@ -30,8 +30,6 @@ public class SwaggerConfig {
                         .title("TOEST API")
                         .description("TOEST (Toeic + Quest) 백엔드 API 문서")
                         .version("v1.0.0"))
-                .addSecurityItem(new SecurityRequirement()
-                        .addList(securitySchemeName))
                 .components(new Components()
                         .addSecuritySchemes(securitySchemeName,
                                 new SecurityScheme()
