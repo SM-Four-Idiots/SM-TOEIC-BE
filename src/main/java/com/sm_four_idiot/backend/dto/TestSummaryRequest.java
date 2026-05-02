@@ -1,6 +1,8 @@
 package com.sm_four_idiot.backend.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 
 import java.util.List;
@@ -11,7 +13,6 @@ import java.util.List;
 @Getter
 public class TestSummaryRequest {
 
-    /** 테스트에 출제된 단어 ID 리스트 */
     @NotEmpty(message = "단어 ID 리스트를 입력해주세요")
-    private List<Long> wordIds;
+    private List<@NotNull @Positive Long> wordIds;
 }
