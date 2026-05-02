@@ -65,7 +65,6 @@ public class SecurityConfig {
                                 "/error"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/words", "/api/words/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/test/questions").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

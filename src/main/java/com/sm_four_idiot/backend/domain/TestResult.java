@@ -17,31 +17,34 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class TestResult {
 
-    /** 테스트 결과 고유 ID (auto increment) */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** 테스트를 진행한 사용자 (지연 로딩) */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    /** 테스트에 출제된 단어 (지연 로딩) */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "word_id", nullable = false)
     private Word word;
 
-    /** 정답 여부 (true: 정답, false: 오답) */
     @Column(nullable = false)
     private boolean isCorrect;
 
-    /** 테스트 진행 일시 (수정 불가) */
+    /** 문제 유형 (0: 영단어 맞히기, 1: 한글 뜻 맞히기) */
+    @Column(nullable = false)
+    private int type;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime testedAt;
 
     @PrePersist
     protected void onCreate() {
         this.testedAt = LocalDateTime.now();
+    }
+
+    public void updateResult(boolean isCorrect) {
+        this.isCorrect = isCorrect;
     }
 }
