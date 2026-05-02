@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
  * - 로그인 시 발급된 리프레시 토큰을 DB에 저장
  * - 액세스 토큰 만료 시 리프레시 토큰으로 재발급
  */
-@Entity
+@Entity₩
 @Table(name = "refresh_token")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

@@ -8,6 +8,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.sm_four_idiot.backend.dto.TestSummaryRequest;
+import com.sm_four_idiot.backend.dto.TestSummaryResponse;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 
@@ -39,5 +42,16 @@ public class TestController {
     public ResponseEntity<TestResponse> submitAnswer(
             @Valid @RequestBody TestRequest request) {
         return ResponseEntity.ok(testService.submitAnswer(request));
+    }
+
+    /**
+     * 테스트 결과 집계
+     * POST /api/test/summary
+     */
+    @PostMapping("/summary")
+    public ResponseEntity<TestSummaryResponse> getTestSummary(
+            @Valid @RequestBody TestSummaryRequest request,
+            @AuthenticationPrincipal String email) {
+        return ResponseEntity.ok(testService.getTestSummary(request, email));
     }
 }

@@ -17,9 +17,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import com.sm_four_idiot.backend.dto.TestSummaryRequest;
+import com.sm_four_idiot.backend.dto.TestSummaryResponse;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -38,22 +41,26 @@ public class TestService {
     /**
      * 테스트 문제 출제
      * - 전체 단어 중 랜덤으로 10개 출제
-     * - english(정답) 필드 제외하여 정답 노출 방지
-     * @return 출제된 단어 리스트 (정답 제외)
+     * - 문제마다 type(0/1) 랜덤 배정
+     * - type=0: 한글 뜻 제공, 영단어 맞히기
+     * - type=1: 영단어 제공, 한글 뜻 맞히기
+     * @return 출제된 문제 리스트 (정답 제외)
      */
     @Transactional(readOnly = true)
     public List<TestQuestionResponse> getTestQuestions() {
         List<Word> allWords = wordRepository.findAll();
         Collections.shuffle(allWords);
+        Random random = new Random();
         return allWords.stream()
-                .limit(10)
-                .map(TestQuestionResponse::new)
+                .limit(30)
+                .map(word -> new TestQuestionResponse(word, random.nextInt(2)))
                 .collect(Collectors.toList());
     }
 
     /**
      * 정답 제출 및 채점
-     * - 대소문자 무시하여 정답 비교
+     * - type=0: 영단어(english) 정답 비교, 대소문자 무시
+     * - type=1: 한글 뜻(meaning) 정답 비교
      * - 오답 시 WrongWord에 저장
      * @param request 정답 제출 요청 DTO
      * @return 채점 결과
@@ -77,9 +84,24 @@ public class TestService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "단어를 찾을 수 없습니다"));
 
-        // 대소문자 무시하여 정답 비교
-        boolean isCorrect = word.getEnglish()
-                .equalsIgnoreCase(request.getAnswer().trim());
+        // type 유효성 검증
+        int type = request.getType();
+        if (type != 0 && type != 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "type은 0 또는 1이어야 합니다");
+        }
+
+        // type에 따라 정답 비교
+        String correctAnswer;
+        boolean isCorrect;
+        if (type == 0) {
+            // 영단어 맞히기: 대소문자 무시
+            correctAnswer = word.getEnglish();
+            isCorrect = correctAnswer.equalsIgnoreCase(request.getAnswer().trim());
+        } else {
+            // 한글 뜻 맞히기: 앞뒤 공백만 제거
+            correctAnswer = word.getMeaning();
+            isCorrect = correctAnswer.equals(request.getAnswer().trim());
+        }
 
         // 테스트 결과 저장
         testResultRepository.save(TestResult.builder()
@@ -98,8 +120,33 @@ public class TestService {
 
         return new TestResponse(
                 isCorrect,
-                word.getEnglish(),
-                isCorrect ? "정답입니다!" : "오답입니다. 정답: " + word.getEnglish()
+                correctAnswer,
+                isCorrect ? "정답입니다!" : "오답입니다. 정답: " + correctAnswer
         );
+    }
+
+
+    /**
+     * 테스트 결과 집계
+     * - 제출된 wordId 기준으로 DB의 TestResult 조회
+     * - 프론트 조작 불가 (서버 DB 기반 집계)
+     * @param request wordId 리스트
+     * @param email   현재 로그인한 사용자 이메일
+     * @return 총 문제 수, 맞은 개수, 틀린 개수
+     */
+    @Transactional(readOnly = true)
+    public TestSummaryResponse getTestSummary(TestSummaryRequest request, String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED, "로그인이 필요합니다"));
+
+        List<TestResult> results = testResultRepository
+                .findLatestByUserAndWordIdIn(user, request.getWordIds());
+
+        int total = results.size();
+        int correct = (int) results.stream().filter(TestResult::isCorrect).count();
+        int wrong = total - correct;
+
+        return new TestSummaryResponse(total, correct, wrong);
     }
 }
