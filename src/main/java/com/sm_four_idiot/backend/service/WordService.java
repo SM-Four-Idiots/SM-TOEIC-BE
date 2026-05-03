@@ -57,9 +57,9 @@ public class WordService {
     @Transactional
     public WordResponse createWord(WordRequest request) {
         Word word = Word.builder()
-                .voca(request.getVoca())
-                .meaning(request.getMeaning())
-                .category(request.getCategory())
+                .voca(request.getVoca().trim())
+                .meaning(request.getMeaning().trim())
+                .category(request.getCategory().trim())
                 .tier(request.getTier())
                 .build();
         return new WordResponse(wordRepository.save(word));
