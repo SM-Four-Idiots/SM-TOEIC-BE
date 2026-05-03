@@ -78,7 +78,7 @@ public class TestService {
     /**
      * 정답 제출 및 채점
      * - DB에 저장된 type 기준으로 채점 (클라이언트 조작 불가)
-     * - type=0: 영단어(english) 정답 비교, 대소문자 무시
+     * - type=0: 영단어(Voca) 정답 비교, 대소문자 무시
      * - type=1: 한글 뜻(meaning) 정답 비교
      */
     @Transactional
@@ -109,7 +109,7 @@ public class TestService {
         String correctAnswer;
         boolean isCorrect;
         if (type == 0) {
-            correctAnswer = word.getEnglish();
+            correctAnswer = word.getVoca();
             isCorrect = correctAnswer.equalsIgnoreCase(request.getAnswer().trim());
         } else {
             correctAnswer = word.getMeaning();
