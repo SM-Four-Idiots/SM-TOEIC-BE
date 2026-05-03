@@ -3,8 +3,6 @@ package com.sm_four_idiot.backend.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 
 /**
  * 토익 단어 엔티티
@@ -13,7 +11,7 @@ import jakarta.validation.constraints.Min;
  */
 @Entity
 @Table(name = "word", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"english", "category"})
+        @UniqueConstraint(columnNames = {"voca", "category"})
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,7 +26,7 @@ public class Word {
 
     /** 영어 단어 */
     @Column(nullable = false)
-    private String english;
+    private String voca;
 
     /** 한글 뜻 */
     @Column(nullable = false)
@@ -39,10 +37,13 @@ public class Word {
     private String category;
 
     /** 난이도 티어 (1~5, Sprint 2에서 Tier 엔티티와 연동 예정) */
-    @Min(1)
-    @Max(5)
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private int tierLevel;
+    private Tier tier;
+
+    public enum Tier {
+        BRONZE, SILVER, GOLD, PLATINUM, DIAMOND
+    }
 
     /** 단어 등록 일시 (수정 불가) */
     @Column(nullable = false, updatable = false)
@@ -56,10 +57,12 @@ public class Word {
     /**
      * 단어 정보 수정
      */
-    public void update(String english, String meaning, String category, int tierLevel) {
-        this.english = english.trim();
+    public void update(String voca, String meaning, String category, Tier tier) {
+        this.voca = voca.trim();
         this.meaning = meaning.trim();
         this.category = category.trim();
-        this.tierLevel = tierLevel;
+        this.tier = tier;
     }
+
+
 }

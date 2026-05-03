@@ -57,10 +57,10 @@ public class WordService {
     @Transactional
     public WordResponse createWord(WordRequest request) {
         Word word = Word.builder()
-                .english(request.getEnglish())
+                .voca(request.getVoca())
                 .meaning(request.getMeaning())
                 .category(request.getCategory())
-                .tierLevel(request.getTierLevel())
+                .tier(request.getTier())
                 .build();
         return new WordResponse(wordRepository.save(word));
     }
@@ -76,8 +76,8 @@ public class WordService {
         Word word = wordRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "단어를 찾을 수 없습니다"));
-        word.update(request.getEnglish(), request.getMeaning(),
-                request.getCategory(), request.getTierLevel());
+        word.update(request.getVoca(), request.getMeaning(),
+                request.getCategory(), request.getTier());
         return new WordResponse(word);
     }
 

@@ -1,6 +1,7 @@
 package com.sm_four_idiot.backend.dto;
 
 import com.sm_four_idiot.backend.domain.Word;
+import com.sm_four_idiot.backend.domain.Word.Tier;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -12,18 +13,18 @@ import java.time.LocalDateTime;
 public class WordResponse {
 
     private Long id;
-    private String english;
+    private String voca;
     private String meaning;
     private String category;
-    private int tierLevel;
+    private Tier tier;
     private LocalDateTime createdAt;
 
     public WordResponse(Word word) {
         this.id = word.getId();
-        this.english = word.getEnglish();
+        this.voca = word.getVoca();
         this.meaning = word.getMeaning();
         this.category = word.getCategory();
-        this.tierLevel = word.getTierLevel();
+        this.tier = word.getTier();
         this.createdAt = word.getCreatedAt();
     }
 }

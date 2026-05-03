@@ -18,6 +18,6 @@ public class TestQuestionResponse {
     public TestQuestionResponse(Word word, int type) {
         this.id = word.getId();
         this.type = type;
-        this.question = type == 0 ? word.getMeaning() : word.getEnglish();
+        this.question = type == 0 ? word.getMeaning() : word.getVoca();
     }
 }
