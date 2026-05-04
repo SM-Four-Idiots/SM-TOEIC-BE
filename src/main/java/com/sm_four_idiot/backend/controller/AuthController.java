@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.bind.annotation.CookieValue;
 
 /**
  * 인증 관련 API 컨트롤러
@@ -36,8 +38,10 @@ public class AuthController {
      * POST /api/auth/login
      */
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        return ResponseEntity.ok(authService.login(request));
+    public ResponseEntity<AuthResponse> login(
+            @Valid @RequestBody LoginRequest request,
+            HttpServletResponse response) {
+        return ResponseEntity.ok(authService.login(request, response));
     }
 
     /**
@@ -46,8 +50,8 @@ public class AuthController {
      */
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refresh(
-            @RequestHeader("Refresh-Token") String refreshToken) {
-        return ResponseEntity.ok(authService.refresh(refreshToken));
+            @CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
+        return ResponseEntity.ok(authService.refresh(refreshToken,  response));
     }
 
     /**
@@ -56,8 +60,9 @@ public class AuthController {
      */
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
-            @RequestHeader("Refresh-Token") String refreshToken) {
-        authService.logout(refreshToken);
+            @CookieValue(value = "refreshToken", required = false) String refreshToken,
+            HttpServletResponse response) {
+        authService.logout(refreshToken, response);
         return ResponseEntity.ok().build();
     }
 }
