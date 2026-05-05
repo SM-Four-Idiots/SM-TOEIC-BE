@@ -46,7 +46,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - VITE_API_URL=http://54.161.87.132:8080
+      - VITE_API_URL=https://54.161.87.132:8080
 
 volumes:
   mysql_data: {}
