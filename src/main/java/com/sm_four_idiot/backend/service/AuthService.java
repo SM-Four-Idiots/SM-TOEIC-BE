@@ -142,7 +142,7 @@ public class AuthService {
         // 쿠키 만료
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/api/auth/refresh")
                 .maxAge(0)
                 .sameSite("Strict")
