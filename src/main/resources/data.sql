@@ -1,3 +1,5 @@
+INSERT IGNORE INTO word (voca, meaning, category, tier, created_at) VALUES
+
 -- ==========================================
 -- PLATINUM (총 50개) - TOEIC 750~850
 -- ==========================================

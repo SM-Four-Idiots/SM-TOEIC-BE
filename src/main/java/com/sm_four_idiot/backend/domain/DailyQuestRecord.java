@@ -1,5 +1,6 @@
 package com.sm_four_idiot.backend.domain;
 
+import com.sm_four_idiot.backend.config.TierConfig;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -37,6 +38,10 @@ public class DailyQuestRecord {
     @Builder.Default
     private int completedCount = 0;
 
+    /** 동시 요청 충돌 방지 */
+    @Version
+    private Long version;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -45,7 +50,11 @@ public class DailyQuestRecord {
         this.createdAt = LocalDateTime.now();
     }
 
+    /** 상한선 체크 후 카운트 증가 */
     public void incrementCount() {
+        if (this.completedCount >= TierConfig.DAILY_QUEST_LIMIT) {
+            throw new IllegalStateException("일일 퀘스트 상한에 도달했습니다");
+        }
         this.completedCount++;
     }
 }

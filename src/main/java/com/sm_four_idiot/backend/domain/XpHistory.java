@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @Table(name = "xp_history")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
 @AllArgsConstructor
+@Builder(access = AccessLevel.PRIVATE)
 public class XpHistory {
 
     @Id
@@ -24,11 +24,11 @@ public class XpHistory {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    /** 획득한 XP */
+    /** 획득한 XP (양수만 허용) */
     @Column(nullable = false)
     private int xpGained;
 
-    /** 획득 사유 (예: "일일 퀘스트 완료") */
+    /** 획득 사유 (빈 문자열 불가) */
     @Column(nullable = false)
     private String reason;
 
@@ -38,5 +38,16 @@ public class XpHistory {
     @PrePersist
     protected void onCreate() {
         this.earnedAt = LocalDateTime.now();
+    }
+
+    /** 검증 후 생성 */
+    public static XpHistory of(User user, int xpGained, String reason) {
+        if (xpGained <= 0) throw new IllegalArgumentException("XP는 양수여야 합니다");
+        if (reason == null || reason.isBlank()) throw new IllegalArgumentException("reason은 필수입니다");
+        return XpHistory.builder()
+                .user(user)
+                .xpGained(xpGained)
+                .reason(reason)
+                .build();
     }
 }
