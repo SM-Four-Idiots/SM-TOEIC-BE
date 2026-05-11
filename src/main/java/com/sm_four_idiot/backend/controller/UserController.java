@@ -26,7 +26,7 @@ public class UserController {
      */
     @GetMapping("/info")
     public ResponseEntity<UserInfoResponse> getUserInfo(
-            @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(userService.getUserInfo(userDetails.getUsername()));
+            @AuthenticationPrincipal String email) {
+        return ResponseEntity.ok(userService.getUserInfo(email));
     }
 }

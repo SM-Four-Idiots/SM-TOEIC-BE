@@ -1,14 +1,15 @@
 jwt:
-  secret: "replace-with-32-byte-secret"
-  expiration: 86400000
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_ACCESS_EXPIRATION}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION}
 
 spring:
   application:
     name: backend
   datasource:
-    url: jdbc:mysql://db:3306/vocadb
-    username: # 복사해서 여기에 붙여넣으세요
-    password: # 복사해서 여기에 붙여넣으세요
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     defer-datasource-initialization: true
@@ -20,10 +21,11 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
   sql:
     init:
-      mode: never # application-example.yaml은 never이지만 실제 application.yaml은 always로 해야함
+      mode: always
 
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
   api-docs:
     path: /v3/api-docs
+  packages-to-scan: com.sm_four_idiot.backend.controller

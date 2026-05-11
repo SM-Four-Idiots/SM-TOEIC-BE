@@ -39,4 +39,6 @@ public class WordController {
             @RequestParam String category) {
         return ResponseEntity.ok(wordService.getWordsByCategory(category));
     }
+
+
 }

@@ -1,60 +1,129 @@
-INSERT IGNORE INTO word (english, meaning, category, tier_level, created_at) VALUES
--- 비즈니스 (business)
-('negotiate', '협상하다', 'business', 1, NOW()),
-('implement', '실행하다', 'business', 1, NOW()),
-('evaluate', '평가하다', 'business', 1, NOW()),
-('collaborate', '협력하다', 'business', 1, NOW()),
-('facilitate', '촉진하다', 'business', 2, NOW()),
-('allocate', '배분하다', 'business', 2, NOW()),
-('prioritize', '우선순위를 정하다', 'business', 2, NOW()),
-('streamline', '간소화하다', 'business', 2, NOW()),
-('delegate', '위임하다', 'business', 3, NOW()),
-('consolidate', '통합하다', 'business', 3, NOW()),
+INSERT IGNORE INTO word (voca, meaning, category, tier, created_at) VALUES
 
--- 경제 (economy)
-('revenue', '수익', 'economy', 1, NOW()),
-('deficit', '적자', 'economy', 1, NOW()),
-('inflation', '인플레이션', 'economy', 1, NOW()),
-('recession', '경기 침체', 'economy', 2, NOW()),
-('depreciate', '가치가 떨어지다', 'economy', 2, NOW()),
-('commodity', '상품', 'economy', 2, NOW()),
-('expenditure', '지출', 'economy', 2, NOW()),
-('subsidy', '보조금', 'economy', 3, NOW()),
-('fiscal', '재정의', 'economy', 3, NOW()),
-('monetary', '통화의', 'economy', 3, NOW()),
+-- ==========================================
+-- PLATINUM (총 50개) - TOEIC 750~850
+-- ==========================================
 
--- 여행 (travel)
-('itinerary', '여행 일정', 'travel', 1, NOW()),
-('accommodation', '숙박', 'travel', 1, NOW()),
-('reservation', '예약', 'travel', 1, NOW()),
-('departure', '출발', 'travel', 1, NOW()),
-('destination', '목적지', 'travel', 1, NOW()),
-('transit', '환승', 'travel', 2, NOW()),
-('customs', '세관', 'travel', 2, NOW()),
-('baggage', '수하물', 'travel', 2, NOW()),
-('voucher', '상품권, 증서', 'travel', 2, NOW()),
-('excursion', '소풍, 당일치기 여행', 'travel', 3, NOW()),
+-- business
+('procure', '조달하다', 'business', 'PLATINUM', NOW()),
+('stipulate', '규정하다', 'business', 'PLATINUM', NOW()),
+('authorize', '승인하다', 'business', 'PLATINUM', NOW()),
+('reconcile', '조정하다', 'business', 'PLATINUM', NOW()),
+('interim', '임시의', 'business', 'PLATINUM', NOW()),
+('mandatory', '의무적인', 'business', 'PLATINUM', NOW()),
+('pending', '보류 중인', 'business', 'PLATINUM', NOW()),
+('lucrative', '수익성이 좋은', 'business', 'PLATINUM', NOW()),
+('viable', '실행 가능한', 'business', 'PLATINUM', NOW()),
+('tentative', '잠정적인', 'business', 'PLATINUM', NOW()),
 
--- 인사/HR (hr)
-('candidate', '지원자', 'hr', 1, NOW()),
-('resume', '이력서', 'hr', 1, NOW()),
-('interview', '면접', 'hr', 1, NOW()),
-('promotion', '승진', 'hr', 1, NOW()),
-('compensation', '보상, 급여', 'hr', 2, NOW()),
-('recruitment', '채용', 'hr', 2, NOW()),
-('probation', '수습 기간', 'hr', 2, NOW()),
-('termination', '계약 해지', 'hr', 2, NOW()),
-('tenure', '재직 기간', 'hr', 3, NOW()),
-('incentive', '인센티브', 'hr', 3, NOW()),
+-- economy
+('asset', '자산', 'economy', 'PLATINUM', NOW()),
+('liability', '부채', 'economy', 'PLATINUM', NOW()),
+('merger', '합병', 'economy', 'PLATINUM', NOW()),
+('fluctuate', '변동하다', 'economy', 'PLATINUM', NOW()),
+('aggregate', '집계하다', 'economy', 'PLATINUM', NOW()),
+('shortfall', '부족분', 'economy', 'PLATINUM', NOW()),
+('nominal', '명목상의', 'economy', 'PLATINUM', NOW()),
+('contingency', '비상사태', 'economy', 'PLATINUM', NOW()),
+('arrears', '체납금', 'economy', 'PLATINUM', NOW()),
+('procurement', '조달', 'economy', 'PLATINUM', NOW()),
 
--- 마케팅 (marketing)
-('campaign', '캠페인', 'marketing', 1, NOW()),
-('demographic', '인구 통계', 'marketing', 1, NOW()),
-('strategy', '전략', 'marketing', 1, NOW()),
-('branding', '브랜딩', 'marketing', 2, NOW()),
-('consumer', '소비자', 'marketing', 2, NOW()),
-('survey', '설문조사', 'marketing', 2, NOW()),
-('launch', '출시하다', 'marketing', 2, NOW()),
-('endorse', '지지하다, 홍보하다', 'marketing', 3, NOW()),
-('penetrate', '침투하다', 'marketing', 3, NOW()),
-('niche', '틈새 시장', 'marketing', 3, NOW());
+-- travel
+('valid', '유효한', 'travel', 'PLATINUM', NOW()),
+('clearance', '통관 허가', 'travel', 'PLATINUM', NOW()),
+('surcharge', '추가 요금', 'travel', 'PLATINUM', NOW()),
+('charter', '전세 내다', 'travel', 'PLATINUM', NOW()),
+('reroute', '경로를 변경하다', 'travel', 'PLATINUM', NOW()),
+('manifest', '화물 목록', 'travel', 'PLATINUM', NOW()),
+('consignment', '위탁 화물', 'travel', 'PLATINUM', NOW()),
+('waybill', '화물 운송장', 'travel', 'PLATINUM', NOW()),
+('levy', '부과하다', 'travel', 'PLATINUM', NOW()),
+('embarkation', '승선', 'travel', 'PLATINUM', NOW()),
+
+-- hr
+('eligible', '자격이 있는', 'hr', 'PLATINUM', NOW()),
+('discrepancy', '불일치', 'hr', 'PLATINUM', NOW()),
+('proficient', '능숙한', 'hr', 'PLATINUM', NOW()),
+('prerequisite', '필수 조건', 'hr', 'PLATINUM', NOW()),
+('indispensable', '필수적인', 'hr', 'PLATINUM', NOW()),
+('exempt', '면제된', 'hr', 'PLATINUM', NOW()),
+('appoint', '임명하다', 'hr', 'PLATINUM', NOW()),
+('subordinate', '부하 직원', 'hr', 'PLATINUM', NOW()),
+('ratify', '비준하다', 'hr', 'PLATINUM', NOW()),
+('enact', '제정하다', 'hr', 'PLATINUM', NOW()),
+
+-- marketing
+('testimonial', '추천사', 'marketing', 'PLATINUM', NOW()),
+('prestigious', '권위 있는', 'marketing', 'PLATINUM', NOW()),
+('prominent', '두드러진', 'marketing', 'PLATINUM', NOW()),
+('inaugural', '첫 번째의', 'marketing', 'PLATINUM', NOW()),
+('subsidize', '보조금을 주다', 'marketing', 'PLATINUM', NOW()),
+('coherent', '일관성 있는', 'marketing', 'PLATINUM', NOW()),
+('affiliation', '제휴', 'marketing', 'PLATINUM', NOW()),
+('exclusive', '독점적인', 'marketing', 'PLATINUM', NOW()),
+('incentivize', '장려하다', 'marketing', 'PLATINUM', NOW()),
+('lucid', '명확한', 'marketing', 'PLATINUM', NOW()),
+
+-- ==========================================
+-- DIAMOND (총 50개) - TOEIC 850~990
+-- ==========================================
+
+-- business
+('unprecedented', '전례 없는', 'business', 'DIAMOND', NOW()),
+('notwithstanding', '그럼에도 불구하고', 'business', 'DIAMOND', NOW()),
+('supersede', '대체하다', 'business', 'DIAMOND', NOW()),
+('pursuant', '준수하여', 'business', 'DIAMOND', NOW()),
+('waive', '포기하다', 'business', 'DIAMOND', NOW()),
+('accrue', '발생하다', 'business', 'DIAMOND', NOW()),
+('incumbent', '재임 중인', 'business', 'DIAMOND', NOW()),
+('scrutinize', '면밀히 조사하다', 'business', 'DIAMOND', NOW()),
+('indemnify', '보상하다', 'business', 'DIAMOND', NOW()),
+('culminate', '절정에 달하다', 'business', 'DIAMOND', NOW()),
+
+-- economy
+('amortize', '상각하다', 'economy', 'DIAMOND', NOW()),
+('insolvency', '지급 불능', 'economy', 'DIAMOND', NOW()),
+('underwrite', '인수하다', 'economy', 'DIAMOND', NOW()),
+('foreclose', '압류하다', 'economy', 'DIAMOND', NOW()),
+('delinquent', '연체의', 'economy', 'DIAMOND', NOW()),
+('yield', '수익률', 'economy', 'DIAMOND', NOW()),
+('solvent', '지급 능력이 있는', 'economy', 'DIAMOND', NOW()),
+('remittance', '송금', 'economy', 'DIAMOND', NOW()),
+('encumber', '부담을 지우다', 'economy', 'DIAMOND', NOW()),
+('covenant', '계약 조항', 'economy', 'DIAMOND', NOW()),
+
+-- travel
+('embargo', '무역 금지', 'travel', 'DIAMOND', NOW()),
+('sanction', '제재', 'travel', 'DIAMOND', NOW()),
+('repatriate', '본국으로 송환하다', 'travel', 'DIAMOND', NOW()),
+('detain', '억류하다', 'travel', 'DIAMOND', NOW()),
+('revoke', '취소하다', 'travel', 'DIAMOND', NOW()),
+('authenticate', '인증하다', 'travel', 'DIAMOND', NOW()),
+('provisional', '임시의', 'travel', 'DIAMOND', NOW()),
+('reciprocate', '상호 교환하다', 'travel', 'DIAMOND', NOW()),
+('renounce', '포기하다', 'travel', 'DIAMOND', NOW()),
+('impound', '압수하다', 'travel', 'DIAMOND', NOW()),
+
+-- hr
+('punitive', '징벌적인', 'hr', 'DIAMOND', NOW()),
+('plaintiff', '원고', 'hr', 'DIAMOND', NOW()),
+('defendant', '피고', 'hr', 'DIAMOND', NOW()),
+('statute', '법령', 'hr', 'DIAMOND', NOW()),
+('provision', '조항', 'hr', 'DIAMOND', NOW()),
+('contravene', '위반하다', 'hr', 'DIAMOND', NOW()),
+('tribunal', '재판소', 'hr', 'DIAMOND', NOW()),
+('exonerate', '무죄를 입증하다', 'hr', 'DIAMOND', NOW()),
+('reprimand', '견책하다', 'hr', 'DIAMOND', NOW()),
+('culpable', '책임이 있는', 'hr', 'DIAMOND', NOW()),
+
+-- marketing
+('commensurate', '상응하는', 'marketing', 'DIAMOND', NOW()),
+('articulate', '명확히 표현하다', 'marketing', 'DIAMOND', NOW()),
+('proliferation', '확산', 'marketing', 'DIAMOND', NOW()),
+('synergy', '시너지', 'marketing', 'DIAMOND', NOW()),
+('trajectory', '궤도', 'marketing', 'DIAMOND', NOW()),
+('differentiator', '차별화 요소', 'marketing', 'DIAMOND', NOW()),
+('consortium', '컨소시엄', 'marketing', 'DIAMOND', NOW()),
+('scalable', '확장 가능한', 'marketing', 'DIAMOND', NOW()),
+('propagate', '전파하다', 'marketing', 'DIAMOND', NOW()),
+('paramount', '가장 중요한', 'marketing', 'DIAMOND', NOW());

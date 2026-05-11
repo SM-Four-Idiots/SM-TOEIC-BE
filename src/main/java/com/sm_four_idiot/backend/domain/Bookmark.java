@@ -5,17 +5,19 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 /**
- * 단어 테스트 결과 엔티티
- * - 사용자가 단어 테스트를 진행할 때마다 결과를 저장
- * - 오답 단어는 WrongWord에 별도 저장
+ * 단어 북마크 (PBI-2.2)
+ * - 사용자별 단어 북마크 저장
  */
 @Entity
-@Table(name = "test_result")
+@Table(name = "bookmark",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"user_id", "word_id"})
+        })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @AllArgsConstructor
-public class TestResult {
+public class Bookmark {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,22 +31,11 @@ public class TestResult {
     @JoinColumn(name = "word_id", nullable = false)
     private Word word;
 
-    @Column(nullable = false)
-    private boolean isCorrect;
-
-    /** 문제 유형 (0: 영단어 맞히기, 1: 한글 뜻 맞히기) */
-    @Column(nullable = false)
-    private int type;
-
     @Column(nullable = false, updatable = false)
-    private LocalDateTime testedAt;
+    private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        this.testedAt = LocalDateTime.now();
-    }
-
-    public void updateResult(boolean isCorrect) {
-        this.isCorrect = isCorrect;
+        this.createdAt = LocalDateTime.now();
     }
 }
