@@ -1,7 +1,7 @@
 package com.sm_four_idiot.backend.dto;
 
 import com.sm_four_idiot.backend.domain.Word;
-import com.sm_four_idiot.backend.domain.Word.Tier;
+import com.sm_four_idiot.backend.domain.Tier;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

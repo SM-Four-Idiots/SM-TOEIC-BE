@@ -1,9 +1,9 @@
 package com.sm_four_idiot.backend.dto;
 
-import com.sm_four_idiot.backend.domain.Word.Tier;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import com.sm_four_idiot.backend.domain.Tier;
 
 /**
  * 단어 추가/수정 요청 DTO

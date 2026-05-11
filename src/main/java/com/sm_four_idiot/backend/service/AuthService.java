@@ -156,7 +156,7 @@ public class AuthService {
     private void setRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(false)      // HTTPS 적용 시 true로 변경
+                .secure(true)      // HTTPS 적용 시 true로 변경
                 .path("/api/auth/refresh")
                 .maxAge(Duration.ofDays(7))
                 .sameSite("Strict")

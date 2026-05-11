@@ -3,6 +3,7 @@ package com.sm_four_idiot.backend.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import com.sm_four_idiot.backend.domain.Tier;
 
 /**
  * 토익 단어 엔티티
@@ -41,9 +42,13 @@ public class Word {
     @Column(nullable = false)
     private Tier tier;
 
-    public enum Tier {
-        BRONZE, SILVER, GOLD, PLATINUM, DIAMOND
-    }
+    /** 단어 이미지 URL */
+    @Column
+    private String imageUrl;
+
+    /** 예시 문장 */
+    @Column(length = 500)
+    private String exampleSentence;
 
     /** 단어 등록 일시 (수정 불가) */
     @Column(nullable = false, updatable = false)
@@ -64,5 +69,12 @@ public class Word {
         this.tier = tier;
     }
 
+    /**
+     * 이미지 URL과 예시문 업데이트
+     */
+    public void updateMedia(String imageUrl, String exampleSentence) {
+        this.imageUrl = imageUrl;
+        this.exampleSentence = exampleSentence;
+    }
 
 }
