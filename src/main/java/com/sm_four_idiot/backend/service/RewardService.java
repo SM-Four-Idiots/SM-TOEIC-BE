@@ -28,12 +28,12 @@ public class RewardService {
     private final UserRepository userRepository;
 
     // application.yaml에 설정된 각 보상 타입별 최대 한도 값을 Map 형태로 가져옵니다.
-    @Value("#{${app.reward.daily-limits}}")
+    @Value("#{{'QUEST_COMPLETION': 10, 'WORD_TEST_PERFECT': 5}}")
     private Map<RewardType, Integer> dailyRewardLimits;
 
     /**
      * [Front-end] 파라미터로 받은 보상 타입에 대해, 오늘 한도를 얼마나 채웠는지 계산하여 반환합니다.
-     * [Back-end] DB 흐름: 데이터 변경이 없으므로 readOnly 트랜잭션으로 열어 리소스 점유를 최소화하며 SELECT 만 수행합니다.
+     * [Back-end] DB 흐름: 데이터 변경이 없으므 로 readOnly 트랜잭션으로 열어 리소스 점유를 최소화하며 SELECT 만 수행합니다.
      */
     @Transactional(readOnly = true)
     public RewardLimitsResponse getRewardLimits(User user, RewardType rewardType) {

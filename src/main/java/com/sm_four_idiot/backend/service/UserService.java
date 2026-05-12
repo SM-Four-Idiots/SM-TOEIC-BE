@@ -24,6 +24,13 @@ public class UserService {
      * @return 이메일, 닉네임
      */
     @Transactional(readOnly = true)
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("해당 이메일을 가진 사용자를 찾을 수 없습니다."));
+        // RuntimeException 대신 프로젝트에서 사용하는 Custom Exception이 있다면 그것을 사용하세요.
+    }
+
+    @Transactional(readOnly = true)
     public UserInfoResponse getUserInfo(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(

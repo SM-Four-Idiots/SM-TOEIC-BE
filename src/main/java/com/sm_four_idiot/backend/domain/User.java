@@ -31,6 +31,9 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
+    private int points;
+
     /** 현재 보유 경험치 (PBI-6) */
     @Column(nullable = false)
     @Builder.Default
@@ -108,5 +111,12 @@ public class User {
         return tierUpgradeAttemptDate != null
                 && tierUpgradeAttemptDate.equals(LocalDate.now())
                 && tierUpgradeAttemptCount >= TierConfig.TIER_UPGRADE_ATTEMPT_LIMIT;
+    }
+
+    /**
+     * 보상 포인트를 증가시키는 비즈니스 로직 메서드
+     */
+    public void addPoints(int amount) {
+        this.points += amount;
     }
 }

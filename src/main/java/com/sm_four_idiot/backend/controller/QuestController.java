@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
  * [API Controller] 퀘스트 관련 클라이언트 요청을 처리하는 컨트롤러
  */
 @RestController
-@RequestMapping("/api/v1/quests")
+@RequestMapping("/api/quests")
 @RequiredArgsConstructor
 public class QuestController {
 
