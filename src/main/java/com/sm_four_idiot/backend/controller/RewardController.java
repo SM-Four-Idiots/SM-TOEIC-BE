@@ -1,74 +1,93 @@
-package com.sm_four_idiot.backend.controller;
+package com.sm_four_idiot.backend.service;
 
+import com.sm_four_idiot.backend.domain.RewardLimit;
 import com.sm_four_idiot.backend.domain.RewardType;
 import com.sm_four_idiot.backend.domain.User;
 import com.sm_four_idiot.backend.dto.RewardClaimRequest;
 import com.sm_four_idiot.backend.dto.RewardClaimResponse;
 import com.sm_four_idiot.backend.dto.RewardLimitsResponse;
-import com.sm_four_idiot.backend.service.RewardService;
-import com.sm_four_idiot.backend.service.UserService;
-import jakarta.validation.Valid;
+import com.sm_four_idiot.backend.exception.RewardLimitExceededException;
+import com.sm_four_idiot.backend.repository.RewardLimitRepository;
+import com.sm_four_idiot.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.time.LocalDate;
+import java.util.Map;
 
 /**
- * [Front-end] 사용자의 보상 대시보드 상태를 조회하거나, 보상 획득 버튼을 눌렀을 때 호출되는 API 컨트롤러입니다.
- * [Back-end] 웹 계층(Presentation Layer)을 담당하며 HTTP 요청을 받아 Service 계층으로 비즈니스 로직 처리를 위임합니다.
+ * [Back-end] 보상 시스템의 핵심 비즈니스 로직(초기화, 한도 검사, 보상 지급)을 수행하는 서비스 계층입니다.
  */
-@RestController
-@RequestMapping("/api/rewards")
+@Service
 @RequiredArgsConstructor
-public class RewardController {
+public class RewardService {
 
-    private final RewardService rewardService;
-    private final UserService userService;
+    private final RewardLimitRepository rewardLimitRepository;
+    private final UserRepository userRepository;
 
-    /**
-     * [Front-end]
-     * 역할: 로그인한 사용자의 모든 보상 타입(퀘스트, 단어 테스트 등)에 대한 현재 상한 상태를 조회합니다.
-     * 파라미터: 없음 (Authorization 헤더의 JWT 토큰으로 유저 식별)
-     * 반환: 보상 타입, 현재까지 받은 포인트, 일일 최대 상한선, 상한 초과 여부를 담은 리스트
+    @Value("#{{'QUEST_COMPLETION': 10, 'WORD_TEST_PERFECT': 5}}")
+    private Map<RewardType, Integer> dailyRewardLimits;
 
-     * [Back-end]
-     * DB 흐름: UserDetails에서 이메일을 추출해 DB에서 User를 조회합니다.
-     * 이후 RewardType Enum의 모든 값을 순회하면서, 각 타입별로 DB(reward_limit 테이블)를 조회(SELECT)하여 DTO로 변환합니다.
-     */
-    @GetMapping("/limits")
-    public ResponseEntity<List<RewardLimitsResponse>> getRewardLimits(@AuthenticationPrincipal UserDetails userDetails) {
-        User user = userService.findByEmail(userDetails.getUsername());
+    @Transactional(readOnly = true)
+    public RewardLimitsResponse getRewardLimits(User user, RewardType rewardType) {
+        LocalDate today = LocalDate.now();
+        int dailyLimit = dailyRewardLimits.getOrDefault(rewardType, 0);
 
-        List<RewardLimitsResponse> allRewardLimits = Arrays.stream(RewardType.values())
-                .map(rewardType -> rewardService.getRewardLimits(user, rewardType))
-                .collect(Collectors.toList());
+        RewardLimit rewardLimit = rewardLimitRepository.findByUserAndRewardType(user, rewardType)
+                .orElse(null);
 
-        return ResponseEntity.ok(allRewardLimits);
+        int currentClaimed = 0;
+        if (rewardLimit != null && rewardLimit.getLastRewardDate().isEqual(today)) {
+            currentClaimed = rewardLimit.getDailyClaimedAmount();
+        }
+
+        return RewardLimitsResponse.builder()
+                .rewardType(rewardType.name())
+                .currentClaimed(currentClaimed)
+                .dailyLimit(dailyLimit)
+                .isLimitExceeded(currentClaimed >= dailyLimit)
+                .build();
     }
 
-    /**
-     * [Front-end]
-     * 역할: 특정 행동 완료 후 보상(포인트) 획득을 서버에 요청합니다.
-     * 파라미터: RewardClaimRequest (rewardType: 보상 종류, amount: 획득할 포인트 양)
-     * 반환: 보상 획득 성공 여부, 현재 총 보유 포인트, 이번에 획득한 포인트 양
+    @Transactional
+    public RewardClaimResponse claimReward(User user, RewardClaimRequest request) {
+        RewardType rewardType = request.getRewardType();
+        int requestedAmount = request.getAmount();
+        LocalDate today = LocalDate.now();
+        int dailyLimit = dailyRewardLimits.getOrDefault(rewardType, 0);
 
-     * [Back-end]
-     * DB 흐름: 클라이언트로부터 들어온 JSON 바디를 @Valid로 1차 검증(음수 불가 등)합니다.
-     * 유효한 요청일 경우 트랜잭션을 시작하여 User 데이터와 RewardLimit 데이터를 DB에서 잠금(Lock) 및 갱신(UPDATE)합니다.
-     */
-    @PostMapping("/claim")
-    public ResponseEntity<RewardClaimResponse> claimReward(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @Valid @RequestBody RewardClaimRequest request) { // @Valid 추가
-            
-        User user = userService.findByEmail(userDetails.getUsername());
-        RewardClaimResponse response = rewardService.claimReward(user, request);
-        
-        return ResponseEntity.ok(response);
+        RewardLimit rewardLimit = rewardLimitRepository.findByUserAndRewardTypeWithLock(user, rewardType)
+                .orElseGet(() -> rewardLimitRepository.save(
+                        RewardLimit.builder()
+                                .user(user)
+                                .rewardType(rewardType)
+                                .dailyClaimedAmount(0)
+                                .lastRewardDate(today)
+                                .build()
+                ));
+
+        rewardLimit.resetDailyLimitIfNewDay(today);
+
+        if (rewardLimit.getDailyClaimedAmount() + requestedAmount > dailyLimit) {
+            throw new RewardLimitExceededException(
+                    String.format("일일 보상 한도(%d점)를 초과했습니다. 현재 누적: %d점", dailyLimit, rewardLimit.getDailyClaimedAmount())
+            );
+        }
+
+        // 4. 보상 지급 및 데이터 업데이트
+        rewardLimit.addClaimedAmount(requestedAmount);
+
+        // [Fix 1] 객체 수정(user.addPoints) 대신 DB 직접 업데이트를 통해 OSIV 의존성 탈피 및 증발 버그 해결
+        userRepository.incrementUserPoints(user.getId(), requestedAmount);
+
+        return RewardClaimResponse.builder()
+                .success(true)
+                // user 객체는 Detached 상태이므로 메모리에 있던 값(과거)에 이번에 얻은 값을 더해서 응답합니다.
+                .newTotalPoints(user.getPoints() + requestedAmount)
+                .claimedAmount(requestedAmount)
+                .message("보상 " + requestedAmount + "점이 정상 지급되었습니다.")
+                .build();
     }
 }

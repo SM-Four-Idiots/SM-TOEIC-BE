@@ -129,9 +129,6 @@ public class QuestService {
 
     /**
      * [Backend] 타 도메인 이벤트 수신 및 진행도 업데이트 로직 (핵심 트랜잭션)
-     * * 1. @Async: 메인 비즈니스(예: 테스트 응시) 스레드를 막지 않고 백그라운드 워커 스레드에서 비동기 실행됩니다.
-     * 2. TransactionPhase.AFTER_COMMIT: 메인 비즈니스가 DB에 완전히 Commit 성공했을 때만 이 퀘스트 로직이 발동합니다.
-     * 3. Propagation.REQUIRES_NEW: 퀘스트 업데이트 중 에러(DB 데드락 등)가 발생해도, 이미 처리된 메인 비즈니스는 Rollback 시키지 않도록 트랜잭션을 완전히 분리합니다.
      */
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -144,40 +141,29 @@ public class QuestService {
         if (config == null) return;
 
         try {
-            // [Fix 3] 비관적 락을 적용하여 갱신 손실 방지 (데이터베이스 Row 수준의 쓰기 잠금)
+            // [Fix - 이미지 4] rollback-only 예외 방지를 위해 INSERT IGNORE 네이티브 쿼리로 안전하게 초기화
+            userQuestRepository.insertIfNotExists(user.getId(), event.getQuestType().name(), config.getTargetProgress());
+
             UserQuest userQuest = userQuestRepository.findByUserAndQuestTypeWithLock(user, event.getQuestType())
-                    .orElseGet(() -> {
-                        try {
-                            // 대시보드를 방문하지 않아 퀘스트가 없는 상태에서 이벤트가 터졌을 때 즉시 생성
-                            return userQuestRepository.save(UserQuest.builder()
-                                    .user(user)
-                                    .questType(event.getQuestType())
-                                    .currentProgress(0)
-                                    .targetProgress(config.getTargetProgress())
-                                    .status(QuestStatus.IN_PROGRESS)
-                                    .updatedAt(LocalDateTime.now())
-                                    .build());
-                        } catch (DataIntegrityViolationException e) {
-                            // 여기도 퀘스트가 없는 상태에서 이벤트가 동시 다발적으로 터질 경우의 방어 로직 (DB 제약조건 에러 Catch 후 재조회)
-                            return userQuestRepository.findByUserAndQuestTypeWithLock(user, event.getQuestType())
-                                    .orElseThrow(); 
-                        }
-                    });
+                    .orElseThrow(() -> new IllegalStateException("퀘스트 로드 실패"));
 
             if (userQuest.getStatus() != QuestStatus.IN_PROGRESS) return;
 
-            // 로드된 퀘스트의 진행도를 도메인 로직을 통해 증가
             userQuest.incrementProgress(event.getIncrementAmount());
 
-            // 달성되었다면 보상 로직 호출
             if (userQuest.getStatus() == QuestStatus.COMPLETED) {
                 completeQuestAndReward(user, userQuest, config);
             }
+        } catch (org.springframework.dao.CannotAcquireLockException | org.springframework.dao.PessimisticLockingFailureException e) {
+            // [Fix - 이미지 4] 단순 Exception 삼킴 방지: 재시도가 필요한 락 타임아웃/실패 에러는 명시적으로 잡아서 로깅 및 Rethrow
+            log.error("[Quest Async] 락 획득 실패. 재시도가 필요할 수 있습니다. userId: {}, questType: {}", event.getUserId(), event.getQuestType(), e);
+            throw e;
         } catch (Exception e) {
-            log.error("퀘스트 이벤트 처리 중 오류 발생. userId: {}", event.getUserId(), e);
+            // 그 외 치명적 에러도 조용히 넘기지 않고 로그를 남긴 후 던져서 확인 가능하게 함
+            log.error("[Quest Async] 퀘스트 이벤트 처리 중 치명적 오류 발생. userId: {}", event.getUserId(), e);
+            throw e;
         }
     }
-
     /**
      * [Backend] 퀘스트 보상(XP) 지급 로직
      */
