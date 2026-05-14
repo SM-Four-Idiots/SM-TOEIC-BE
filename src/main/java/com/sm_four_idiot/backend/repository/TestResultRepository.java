@@ -29,4 +29,6 @@ public interface TestResultRepository extends JpaRepository<TestResult, Long> {
             @Param("user") User user,
             @Param("wordIds") List<Long> wordIds
     );
+
+    long countByUserAndIsCorrectTrue(User user);
 }
