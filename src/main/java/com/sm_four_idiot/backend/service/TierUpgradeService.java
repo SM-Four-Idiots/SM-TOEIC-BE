@@ -98,7 +98,6 @@ public class TierUpgradeService {
         int correctCount = 0;
 
         for (TierUpgradeResultRequest.AnswerItem item : request.getAnswers()) {
-            Word word = new Word();  // 프록시용
 
             // DB에서 type 조회
             TestResult pendingResult = testResultRepository
