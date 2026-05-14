@@ -7,6 +7,7 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import io.swagger.v3.oas.models.servers.Server;
 
 /**
  * Swagger UI 설정 클래스
@@ -26,6 +27,7 @@ public class SwaggerConfig {
         String securitySchemeName = "bearerAuth";
 
         return new OpenAPI()
+                .addServersItem(new Server().url("https://54.224.11.68"))
                 .info(new Info()
                         .title("TOEST API")
                         .description("TOEST (Toeic + Quest) 백엔드 API 문서")

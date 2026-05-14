@@ -80,6 +80,7 @@ public class UserService {
                 .totalDailyQuestCompleted(user.getTotalDailyQuestCompleted())
                 .totalWeeklyQuestCompleted(0) // PBI-15 때 구현
                 .recentXpHistory(recentXpHistory)
+                .tierUpgradeEligible(user.isTierUpgradeEligible())
                 .build();
     }
 
