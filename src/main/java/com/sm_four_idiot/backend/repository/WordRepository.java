@@ -2,6 +2,7 @@ package com.sm_four_idiot.backend.repository;
 
 import com.sm_four_idiot.backend.domain.Word;
 import org.springframework.data.jpa.repository.JpaRepository;
+import com.sm_four_idiot.backend.domain.Tier;
 
 import java.util.List;
 
@@ -12,4 +13,6 @@ public interface WordRepository extends JpaRepository<Word, Long> {
 
     /** 카테고리별 단어 조회 */
     List<Word> findByCategory(String category);
+
+    List<Word> findByTier(Tier tier);
 }
