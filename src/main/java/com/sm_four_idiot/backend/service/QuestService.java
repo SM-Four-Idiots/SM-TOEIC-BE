@@ -6,6 +6,8 @@ import com.sm_four_idiot.backend.dto.QuestResponse;
 import com.sm_four_idiot.backend.event.QuestProgressEvent;
 import com.sm_four_idiot.backend.repository.UserQuestRepository;
 import com.sm_four_idiot.backend.repository.UserRepository;
+import com.sm_four_idiot.backend.repository.XpHistoryRepository;
+import com.sm_four_idiot.backend.config.TierConfig;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,7 @@ public class QuestService {
 
     private final UserQuestRepository userQuestRepository;
     private final UserRepository userRepository;
+    private final XpHistoryRepository xpHistoryRepository;
 
     // 초기 생성되는 일일 퀘스트의 메타데이터 (제목, 목표량, 보상 경험치) 설정 맵
     private static final Map<QuestType, QuestConfig> DEFAULT_QUESTS = Map.of(
@@ -154,7 +157,7 @@ public class QuestService {
             if (userQuest.getStatus() == QuestStatus.COMPLETED) {
                 completeQuestAndReward(user, userQuest, config);
             }
-        } catch (org.springframework.dao.CannotAcquireLockException | org.springframework.dao.PessimisticLockingFailureException e) {
+        } catch (org.springframework.dao.PessimisticLockingFailureException e) {
             // [Fix - 이미지 4] 단순 Exception 삼킴 방지: 재시도가 필요한 락 타임아웃/실패 에러는 명시적으로 잡아서 로깅 및 Rethrow
             log.error("[Quest Async] 락 획득 실패. 재시도가 필요할 수 있습니다. userId: {}, questType: {}", event.getUserId(), event.getQuestType(), e);
             throw e;
@@ -168,11 +171,37 @@ public class QuestService {
      * [Backend] 퀘스트 보상(XP) 지급 로직
      */
     private void completeQuestAndReward(User user, UserQuest userQuest, QuestConfig config) {
-        // [Fix 2 적용] 객체에 더하는 대신 DB 레벨의 Update 쿼리 실행으로 동시성 문제(XP 증발) 원천 차단
-        // 영속성 컨텍스트(clearAutomatically) 문제를 해결했으므로 안전하게 동작함
+        int requiredXp = TierConfig.getRequiredXp(user.getTier());
+
+        // streak 계산 (clearAutomatically 전에 user에서 읽기)
+        LocalDate today = LocalDate.now();
+        LocalDate lastLearnedDate = user.getLastLearnedDate();
+        boolean shouldUpdateStreak = lastLearnedDate == null || !lastLearnedDate.isEqual(today);
+        int newStreak = user.getCurrentStreak();
+        int newMaxStreak = user.getMaxStreak();
+
+        if (shouldUpdateStreak) {
+            if (lastLearnedDate == null || lastLearnedDate.isBefore(today.minusDays(1))) {
+                newStreak = 1; // 처음이거나 연속 끊김
+            } else {
+                newStreak = user.getCurrentStreak() + 1; // 어제 했으면 연속 증가
+            }
+            newMaxStreak = Math.max(newMaxStreak, newStreak);
+        }
+
+        // XpHistory 저장 (user managed 상태일 때 먼저)
+        xpHistoryRepository.save(XpHistory.of(user, config.getXpReward(), config.getTitle()));
+
+        // 직접 쿼리들
         userRepository.incrementUserXp(user.getId(), config.getXpReward());
-        
+        userRepository.updateTierUpgradeEligibleIfReached(user.getId(), requiredXp);
+        userRepository.incrementTotalDailyQuestCompleted(user.getId());
+
+        if (shouldUpdateStreak) {
+            userRepository.updateStreak(user.getId(), newStreak, newMaxStreak, today);
+        }
+
         userQuest.rewardQuest();
-        userQuestRepository.save(userQuest); 
+        userQuestRepository.save(userQuest);
     }
 }

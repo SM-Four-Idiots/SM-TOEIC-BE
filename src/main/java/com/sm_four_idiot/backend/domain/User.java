@@ -72,6 +72,21 @@ public class User {
         USER, ADMIN
     }
 
+    @Column(nullable = false)
+    @Builder.Default
+    private int currentStreak = 0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private int maxStreak = 0;
+
+    @Column
+    private LocalDate lastLearnedDate;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private int totalDailyQuestCompleted = 0;
+
     /** XP 추가 후 승급 자격 자동 체크 (음수 방어) */
     public void addXp(int amount) {
         if (amount <= 0) throw new IllegalArgumentException("XP는 양수여야 합니다");

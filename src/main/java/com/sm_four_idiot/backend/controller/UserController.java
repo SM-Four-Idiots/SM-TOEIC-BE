@@ -2,6 +2,7 @@ package com.sm_four_idiot.backend.controller;
 
 import com.sm_four_idiot.backend.dto.UserInfoResponse;
 import com.sm_four_idiot.backend.service.UserService;
+import com.sm_four_idiot.backend.dto.MyPageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -9,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 
 /**
  * 유저 정보 관련 API
@@ -28,5 +30,11 @@ public class UserController {
     public ResponseEntity<UserInfoResponse> getUserInfo(
             @AuthenticationPrincipal String email) {
         return ResponseEntity.ok(userService.getUserInfo(email));
+    }
+
+    @GetMapping("/mypage")
+    public ResponseEntity<MyPageResponse> getMyPage(
+            @AuthenticationPrincipal String email) {
+        return ResponseEntity.ok(userService.getMyPage(email));
     }
 }
