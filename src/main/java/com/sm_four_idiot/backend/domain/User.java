@@ -134,4 +134,8 @@ public class User {
     public void addPoints(int amount) {
         this.points += amount;
     }
+
+    /** 마지막 워들 플레이 날짜 (하루 1회 제한) */
+    @Column
+    private LocalDate lastWordleDate;
 }

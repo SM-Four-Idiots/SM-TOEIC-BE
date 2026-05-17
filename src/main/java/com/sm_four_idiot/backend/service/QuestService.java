@@ -39,6 +39,7 @@ public class QuestService {
     private final UserQuestRepository userQuestRepository;
     private final UserRepository userRepository;
     private final XpHistoryRepository xpHistoryRepository;
+    private final WeeklyQuestService weeklyQuestService;
 
     // 초기 생성되는 일일 퀘스트의 메타데이터 (제목, 목표량, 보상 경험치) 설정 맵
     private static final Map<QuestType, QuestConfig> DEFAULT_QUESTS = Map.of(
@@ -200,6 +201,8 @@ public class QuestService {
         if (shouldUpdateStreak) {
             userRepository.updateStreak(user.getId(), newStreak, newMaxStreak, today);
         }
+
+        weeklyQuestService.incrementWeeklyProgress(user.getId());
 
         userQuest.rewardQuest();
         userQuestRepository.save(userQuest);

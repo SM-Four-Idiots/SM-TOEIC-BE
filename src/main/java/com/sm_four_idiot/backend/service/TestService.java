@@ -1,5 +1,6 @@
 package com.sm_four_idiot.backend.service;
 
+import com.sm_four_idiot.backend.domain.QuestType;
 import com.sm_four_idiot.backend.domain.TestResult;
 import com.sm_four_idiot.backend.domain.User;
 import com.sm_four_idiot.backend.domain.Word;
@@ -9,11 +10,13 @@ import com.sm_four_idiot.backend.dto.TestRequest;
 import com.sm_four_idiot.backend.dto.TestResponse;
 import com.sm_four_idiot.backend.dto.TestSummaryRequest;
 import com.sm_four_idiot.backend.dto.TestSummaryResponse;
+import com.sm_four_idiot.backend.event.QuestProgressEvent;
 import com.sm_four_idiot.backend.repository.TestResultRepository;
 import com.sm_four_idiot.backend.repository.UserRepository;
 import com.sm_four_idiot.backend.repository.WordRepository;
 import com.sm_four_idiot.backend.repository.WrongWordRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -33,6 +36,7 @@ public class TestService {
     private final UserRepository userRepository;
     private final TestResultRepository testResultRepository;
     private final WrongWordRepository wrongWordRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 테스트 문제 출제
@@ -67,7 +71,7 @@ public class TestService {
                             .user(user)
                             .word(word)
                             .type(type)
-                            .isCorrect(false) // 아직 채점 전
+                            .isCorrect(false)
                             .build());
 
                     return new TestQuestionResponse(word, type);
@@ -127,6 +131,12 @@ public class TestService {
                     .build());
         }
 
+        // 정답 시 WORD_LEARN 퀘스트 진행도 증가
+        if (isCorrect) {
+            eventPublisher.publishEvent(
+                    new QuestProgressEvent(this, user.getId(), QuestType.WORD_LEARN, 1));
+        }
+
         return new TestResponse(
                 isCorrect,
                 correctAnswer,
@@ -136,6 +146,7 @@ public class TestService {
 
     /**
      * 테스트 결과 집계
+     * - TEST_COMPLETE 퀘스트 진행도 증가
      */
     @Transactional(readOnly = true)
     public TestSummaryResponse getTestSummary(TestSummaryRequest request, String email) {
@@ -149,6 +160,10 @@ public class TestService {
         int total = results.size();
         int correct = (int) results.stream().filter(TestResult::isCorrect).count();
         int wrong = total - correct;
+
+        // 테스트 완료 시 TEST_COMPLETE 퀘스트 진행도 증가
+        eventPublisher.publishEvent(
+                new QuestProgressEvent(this, user.getId(), QuestType.TEST_COMPLETE, 1));
 
         return new TestSummaryResponse(total, correct, wrong);
     }
