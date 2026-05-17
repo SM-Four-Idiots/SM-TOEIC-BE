@@ -152,7 +152,7 @@ public class TestService {
      * 테스트 결과 집계
      * - TEST_COMPLETE 퀘스트 진행도 증가
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public TestSummaryResponse getTestSummary(TestSummaryRequest request, String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(
