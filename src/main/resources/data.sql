@@ -131,6 +131,7 @@ INSERT IGNORE INTO word (voca, meaning, category, tier, created_at) VALUES
 -- ==========================================
 -- WORDLE용 5글자 단어 (50개)
 -- ==========================================
+INSERT IGNORE INTO word (voca, meaning, category, tier, created_at) VALUES
 ('audit', '감사하다', 'business', 'GOLD', NOW()),
 ('bonus', '보너스', 'business', 'BRONZE', NOW()),
 ('brand', '브랜드', 'marketing', 'BRONZE', NOW()),
