@@ -55,4 +55,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "WHEN 'BRONZE' THEN 1 END DESC, " +
             "u.xp DESC")
     List<User> findAllOrderByTierAndXp();
+
+    /**
+     * 워들 플레이 날짜 업데이트
+     */
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("UPDATE User u SET u.lastWordleDate = :date WHERE u.id = :userId")
+    void updateLastWordleDate(@Param("userId") Long userId, @Param("date") LocalDate date);
 }
