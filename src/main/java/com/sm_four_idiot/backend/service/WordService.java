@@ -103,4 +103,20 @@ public class WordService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 단어 검색
+     * - 영단어 또는 한글 뜻으로 검색
+     * - 티어 필터 적용 (없으면 전체)
+     * @param keyword 검색어
+     * @param tier 티어 필터 (없으면 null)
+     * @return 검색 결과 단어 리스트
+     */
+    @Transactional(readOnly = true)
+    public List<WordResponse> searchWords(String keyword, Tier tier) {
+        return wordRepository.searchWords(keyword, tier)
+                .stream()
+                .map(WordResponse::new)
+                .collect(Collectors.toList());
+    }
+
 }
