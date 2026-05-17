@@ -23,5 +23,14 @@ public interface WordRepository extends JpaRepository<Word, Long> {
      */
     @Query("SELECT w FROM Word w WHERE LENGTH(w.voca) = :length")
     List<Word> findByVocaLength(@Param("length") int length);
+
+    /**
+     * 영단어 또는 한글 뜻으로 검색 + 티어 필터
+     * - tier가 null이면 전체 조회
+     */
+    @Query("SELECT w FROM Word w WHERE " +
+            "(w.voca LIKE %:keyword% OR w.meaning LIKE %:keyword%) " +
+            "AND (:tier IS NULL OR w.tier = :tier)")
+    List<Word> searchWords(@Param("keyword") String keyword, @Param("tier") Tier tier);
 }
 

@@ -123,12 +123,16 @@ public class TestService {
         // 기존 TestResult 업데이트 (isCorrect 갱신)
         pendingResult.updateResult(isCorrect);
 
-        // 오답 시 WrongWord 저장
+        // 유저별로 틀린 단어 찾기
         if (!isCorrect) {
-            wrongWordRepository.save(WrongWord.builder()
-                    .user(user)
-                    .word(word)
-                    .build());
+            wrongWordRepository.findByUserAndWord(user, word)
+                    .ifPresentOrElse(
+                            WrongWord::incrementWrongCount,
+                            () -> wrongWordRepository.save(WrongWord.builder()
+                                    .user(user)
+                                    .word(word)
+                                    .build())
+                    );
         }
 
         // 정답 시 WORD_LEARN 퀘스트 진행도 증가
@@ -148,7 +152,7 @@ public class TestService {
      * 테스트 결과 집계
      * - TEST_COMPLETE 퀘스트 진행도 증가
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public TestSummaryResponse getTestSummary(TestSummaryRequest request, String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(

@@ -48,5 +48,16 @@ public class WordController {
         return ResponseEntity.ok(wordService.getWordsByTier(tier));
     }
 
+    /**
+     * 단어 검색 (일반 유저 + 관리자 공통)
+     * GET /api/words/search?keyword=accomplish&tier=BRONZE
+     */
+    @GetMapping("/search")
+    public ResponseEntity<List<WordResponse>> searchWords(
+            @RequestParam String keyword,
+            @RequestParam(required = false) Tier tier) {
+        return ResponseEntity.ok(wordService.searchWords(keyword, tier));
+    }
+
 
 }
