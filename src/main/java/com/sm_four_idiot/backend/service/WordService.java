@@ -9,7 +9,7 @@ import com.sm_four_idiot.backend.domain.Word;
 import com.sm_four_idiot.backend.dto.WordRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-
+import com.sm_four_idiot.backend.domain.Tier;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -92,6 +92,15 @@ public class WordService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "단어를 찾을 수 없습니다"));
         wordRepository.delete(word);
+    }
+
+    // WordService에 추가
+    @Transactional(readOnly = true)
+    public List<WordResponse> getWordsByTier(Tier tier) {
+        return wordRepository.findByTier(tier)
+                .stream()
+                .map(WordResponse::new)
+                .collect(Collectors.toList());
     }
 
 }

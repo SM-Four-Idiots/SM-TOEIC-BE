@@ -9,6 +9,7 @@ import com.sm_four_idiot.backend.dto.WordRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import java.util.List;
+import com.sm_four_idiot.backend.domain.Tier;
 
 /**
  * 단어 관련 API 컨트롤러
@@ -38,6 +39,13 @@ public class WordController {
     public ResponseEntity<List<WordResponse>> getWordsByCategory(
             @RequestParam String category) {
         return ResponseEntity.ok(wordService.getWordsByCategory(category));
+    }
+
+    // WordController에 추가
+    @GetMapping("/tier")
+    public ResponseEntity<List<WordResponse>> getWordsByTier(
+            @RequestParam Tier tier) {
+        return ResponseEntity.ok(wordService.getWordsByTier(tier));
     }
 
 
