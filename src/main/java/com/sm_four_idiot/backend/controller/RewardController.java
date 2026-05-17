@@ -12,7 +12,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -33,18 +32,14 @@ public class RewardController {
 
     /**
      * [Front-end]
-     * 역할: 로그인한 사용자의 모든 보상 타입(퀘스트, 단어 테스트 등)에 대한 현재 상한 상태를 조회합니다.
+     * 역할: 로그인한 사용자의 모든 보상 타입에 대한 현재 상한 상태를 조회합니다.
      * 파라미터: 없음 (Authorization 헤더의 JWT 토큰으로 유저 식별)
      * 반환: 보상 타입, 현재까지 받은 포인트, 일일 최대 상한선, 상한 초과 여부를 담은 리스트
-     *
-     * [Back-end]
-     * DB 흐름: UserDetails에서 이메일을 추출해 DB에서 User를 조회합니다.
-     * 이후 RewardType Enum의 모든 값을 순회하면서, 각 타입별로 DB(reward_limit 테이블)를 조회(SELECT)하여 DTO로 변환합니다.
      */
     @GetMapping("/limits")
-    // [Fix - 이미지 5] 프론트엔드와의 계약(Contract) 일관성을 위해 ResponseDto<T> 형태로 래핑하여 반환합니다.
-    public ResponseEntity<ResponseDto<List<RewardLimitsResponse>>> getRewardLimits(@AuthenticationPrincipal UserDetails userDetails) {
-        User user = userService.findByEmail(userDetails.getUsername());
+    public ResponseEntity<ResponseDto<List<RewardLimitsResponse>>> getRewardLimits(
+            @AuthenticationPrincipal String email) {
+        User user = userService.findByEmail(email);
 
         List<RewardLimitsResponse> allRewardLimits = Arrays.stream(RewardType.values())
                 .map(rewardType -> rewardService.getRewardLimits(user, rewardType))
@@ -58,18 +53,13 @@ public class RewardController {
      * 역할: 특정 행동 완료 후 보상(포인트) 획득을 서버에 요청합니다.
      * 파라미터: RewardClaimRequest (rewardType: 보상 종류, amount: 획득할 포인트 양)
      * 반환: 보상 획득 성공 여부, 현재 총 보유 포인트, 이번에 획득한 포인트 양
-     *
-     * [Back-end]
-     * DB 흐름: 클라이언트로부터 들어온 JSON 바디를 @Valid로 1차 검증(음수 불가 등)합니다.
-     * 유효한 요청일 경우 트랜잭션을 시작하여 User 데이터와 RewardLimit 데이터를 DB에서 잠금(Lock) 및 갱신(UPDATE)합니다.
      */
     @PostMapping("/claim")
-    // [Fix - 이미지 5] 성공 시에도 동일하게 ResponseDto<T> 구조를 유지하여 프론트엔드의 파싱 에러를 방지합니다.
     public ResponseEntity<ResponseDto<RewardClaimResponse>> claimReward(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal String email,
             @Valid @RequestBody RewardClaimRequest request) {
 
-        User user = userService.findByEmail(userDetails.getUsername());
+        User user = userService.findByEmail(email);
         RewardClaimResponse response = rewardService.claimReward(user, request);
 
         return ResponseEntity.ok(ResponseDto.success(response));
