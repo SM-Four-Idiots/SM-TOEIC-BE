@@ -85,6 +85,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
                 "http://localhost:3000",
+                "https://localhost:3000",
                 "https://sm-toeic-fe.vercel.app",
                 "https://54.224.11.68"
         ));
